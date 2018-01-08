@@ -25,7 +25,7 @@ $ python tools/create_records.py -p hashiwa0
 2) Run WSGI Application
 
 ```
-$ sudo docker run -d -p 8000:80 --link postgres_instance:postgres001 -e DBHOST=postgres001 -e DBPASSWORD=hashiwa0 wsgi_sample
+$ sudo docker run -d -p 8000:80 --link postgres_instance:postgres001 -e DBHOST=postgres001 -e DBPASSWORD=hashiwa0 --name wsgi_instance1 wsgi_sample
 ```
 
 3) See http://localhost:8000 at your browser.
