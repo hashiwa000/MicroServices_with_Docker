@@ -1,17 +1,18 @@
+from os import getenv
 import psycopg2
 
 conf = {
-        'dbname': 'test',
-        'host': 'postgres001',
-        'user': 'postgres',
-        'password': 'mysecretpassword',
-        'table': 'records',
+        'DBNAME': getenv('DBNAME', 'test'),
+        'DBHOST': getenv('DBHOST', 'postgres001'),
+        'DBUSER': getenv('DBUSER', 'postgres'),
+        'DBPASSWORD': getenv('DBPASSWORD', 'mysecretpassword'),
+        'DBTABLE': getenv('DBTABLE', 'records'),
        }
 
 def get_records():
-    cnn = psycopg2.connect("dbname=%(dbname)s host=%(host)s user=%(user)s password=%(password)s" % conf)
+    cnn = psycopg2.connect("dbname=%(DBNAME)s host=%(DBHOST)s user=%(DBUSER)s password=%(DBPASSWORD)s" % conf)
     cur = cnn.cursor()
-    cur.execute("SELECT * FROM %(table)s;" % conf)
+    cur.execute("SELECT * FROM %(DBTABLE)s;" % conf)
     return cur.fetchall()
 
 def application(environ, start_response):
