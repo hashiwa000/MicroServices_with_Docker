@@ -19,7 +19,6 @@ $ sudo docker build -t wsgi_sample wsgi_app
 
 ```
 $ sudo docker run -d -e POSTGRES_PASSWORD=hashiwa0 -p 5432:5432 --name postgres_instance postgresql_sample
-$ python tools/create_records.py -p hashiwa0
 ```
 
 2) Run WSGI Application
@@ -30,3 +29,8 @@ $ sudo docker run -d -p 8000:80 --link postgres_instance:postgres001 -e DBHOST=p
 
 3) See http://localhost:8000 at your browser.
 
+### Insert sample data into database
+
+```
+$ python tools/create_records.py -p hashiwa0
+```

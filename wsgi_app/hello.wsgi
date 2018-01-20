@@ -1,5 +1,7 @@
 from os import getenv
 import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from psycopg2 import ProgrammingError
 
 conf = {
         'DBNAME': getenv('DBNAME', 'test'),
@@ -8,8 +10,31 @@ conf = {
         'DBPASSWORD': getenv('DBPASSWORD', 'mysecretpassword'),
         'DBTABLE': getenv('DBTABLE', 'records'),
        }
+initialized = False
+
+# initialize
+def initialize_database(conf):
+    # try to create database
+    try:
+        dsn = "dbname=postgres host=%(DBHOST)s user=%(DBUSER)s password=%(DBPASSWORD)s" % conf
+        with psycopg2.connect(dsn) as conn:
+            conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+            with conn.cursor() as cur:
+                cur.execute("CREATE DATABASE %(DBNAME)s;" % conf)
+            conn.commit()
+    except ProgrammingError:
+        pass # the database already exists
+    # create table
+    dsn = "dbname=%(DBNAME)s host=%(DBHOST)s user=%(DBUSER)s password=%(DBPASSWORD)s" % conf
+    with psycopg2.connect(dsn) as conn:
+        with conn.cursor() as cur:
+            cur.execute("CREATE TABLE IF NOT EXISTS %(DBTABLE)s (id serial PRIMARY KEY, num integer, data varchar);" % conf)
+    initialized = True
+initialize_database(conf)
 
 def get_records():
+    if not initialized:
+        initialize_database(conf)
     with psycopg2.connect("dbname=%(DBNAME)s host=%(DBHOST)s user=%(DBUSER)s password=%(DBPASSWORD)s" % conf) as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT * FROM %(DBTABLE)s;" % conf)
